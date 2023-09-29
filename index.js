@@ -39,7 +39,7 @@ server.get('/products/:id', function (req, res, next) {
 console.log('GET /products/:id params=>' + JSON.stringify(req.params));
 
 // Find a single product by their id within save
-productsSave.findOne({ _id: req.params.id }, function (error, product) {
+productsSave.findOne({ product_id: req.params.id }, function (error, product) {
 
   // If there are any errors, pass them to next in the correct format
   if (error) return next(new Error(JSON.stringify(error.errors)))
@@ -88,4 +88,54 @@ server.post('/products', function (req, res, next) {
       // Send the product if no issues
       res.send(201, product)
     })
-  })
+})
+
+// Update a product by their id
+server.put('/products/:id', function (req, res, next) {
+    console.log('POST /products params=>' + JSON.stringify(req.params));
+    console.log('POST /products body=>' + JSON.stringify(req.body));
+    // validation of manadatory fields
+    if (req.body.name === undefined ) {
+      // If there are any errors, pass them to next in the correct format
+      return next(new errors.BadRequestError('name must be supplied'))
+    }
+    if (req.body.price === undefined ) {
+      // If there are any errors, pass them to next in the correct format
+      return next(new errors.BadRequestError('price must be supplied'))
+    }
+    if (req.body.quantity === undefined ) {
+      // If there are any errors, pass them to next in the correct format
+      return next(new errors.BadRequestError('quantity must be supplied'))
+    }
+    
+    let newproduct = {
+          product_id: req.body.id,
+          name: req.body.name, 
+          price: req.body.price,
+          quantity: req.body.quantity
+      }
+    
+    // Update the product with the persistence engine
+    productsSave.update(newproduct, function (error, product) {
+      // If there are any errors, pass them to next in the correct format
+      if (error) return next(new Error(JSON.stringify(error.errors)))
+  
+      // Send a 200 OK response
+      res.send(200)
+    })
+})
+
+// Delete product with the given id
+server.del('/products/:id', function (req, res, next) {
+    console.log('POST /products params=>' + JSON.stringify(req.params));
+    // Delete the product with the persistence engine
+    productsSave.delete(req.params.id, function (error, product) {
+  
+      // If there are any errors, pass them to next in the correct format
+      if (error) return next(new Error(JSON.stringify(error.errors)))
+  
+      // Send a 204 response
+      res.send(204)
+    })
+})
+  

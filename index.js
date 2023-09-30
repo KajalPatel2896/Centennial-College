@@ -1,8 +1,8 @@
 let SERVER_NAME = 'product-api'
 let PORT = 5000;
 let HOST = '127.0.0.1';
-let GET_COUNTER = 0;
-let POSt_COUNTER = 0;
+let getCounter = 0;
+let postCounter = 0;
 
 let errors = require('restify-errors');
 let restify = require('restify')
@@ -34,8 +34,8 @@ server.get('/products', function (req, res, next) {
 
         // Return all of the products in the system
         res.send(products)
-        GET_COUNTER++;
-        console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
+        getCounter++;
+        console.log('Processed Request Count--> GET :' + getCounter + ', POST: ' + postCounter);
     })
 })
 
@@ -57,8 +57,8 @@ server.get('/products/:id', function (req, res, next) {
             res.send(404)
         }
 
-        GET_COUNTER++;
-        console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
+        getCounter++;
+        console.log('Processed Request Count--> GET :' + getCounter + ', POST: ' + postCounter);
     })
 })
 
@@ -97,8 +97,8 @@ server.post('/products', function (req, res, next) {
       // Send the product if no issues
       res.send(201, product)
     })
-    POST_COUNTER++;
-    console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
+    postCounter++;
+    console.log('Processed Request Count--> GET :' + getCounter + ', POST: ' + postCounter);
 })
 
 // Update a product by their id
@@ -106,6 +106,10 @@ server.put('/products/:id', function (req, res, next) {
     console.log('POST /products params=>' + JSON.stringify(req.params));
     console.log('POST /products body=>' + JSON.stringify(req.body));
     // validation of manadatory fields
+    if (req.body.product_id === undefined ) {
+      // If there are any errors, pass them to next in the correct format
+      return next(new errors.BadRequestError('Product id must be supplied'))
+    }
     if (req.body.name === undefined ) {
       // If there are any errors, pass them to next in the correct format
       return next(new errors.BadRequestError('name must be supplied'))
@@ -134,8 +138,8 @@ server.put('/products/:id', function (req, res, next) {
       // Send a 200 OK response
       res.send(200)
     })
-    POST_COUNTER++;
-    console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
+    postCounter++;
+    console.log('Processed Request Count--> GET :' + getCounter + ', POST: ' + postCounter);
 })
 
 // Delete product with the given id

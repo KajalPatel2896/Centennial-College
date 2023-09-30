@@ -1,17 +1,19 @@
 let SERVER_NAME = 'product-api'
 let PORT = 5000;
 let HOST = '127.0.0.1';
+let GET_COUNTER = 0;
+let POSt_COUNTER = 0;
 
 let errors = require('restify-errors');
 let restify = require('restify')
 
 // Get a persistence engine for the products
-    , productsSave = require('save')('products')
+, productsSave = require('save')('products')
 
-    // Create the restify server
-    , server = restify.createServer({ name: SERVER_NAME})
+// Create the restify server
+, server = restify.createServer({ name: SERVER_NAME})
 
-    server.listen(PORT, HOST, function () {
+server.listen(PORT, HOST, function () {
     console.log('Server %s listening at %s', server.name, server.url)
     console.log('**** Resources: ****')
     console.log('********************')
@@ -24,13 +26,16 @@ server.use(restify.plugins.bodyParser());
 
 // Get all products in the system
 server.get('/products', function (req, res, next) {
-    console.log('GET /products params=>' + JSON.stringify(req.params));
 
+    console.log('GET /products params=>' + JSON.stringify(req.params));
+    
     // Find every entity within the given collection
     productsSave.find({}, function (error, products) {
 
-    // Return all of the products in the system
-    res.send(products)
+        // Return all of the products in the system
+        res.send(products)
+        GET_COUNTER++;
+        console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
     })
 })
 
@@ -51,6 +56,9 @@ server.get('/products/:id', function (req, res, next) {
             // Send 404 header if the product doesn't exist
             res.send(404)
         }
+
+        GET_COUNTER++;
+        console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
     })
 })
 
@@ -89,6 +97,8 @@ server.post('/products', function (req, res, next) {
       // Send the product if no issues
       res.send(201, product)
     })
+    POST_COUNTER++;
+    console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
 })
 
 // Update a product by their id
@@ -124,11 +134,13 @@ server.put('/products/:id', function (req, res, next) {
       // Send a 200 OK response
       res.send(200)
     })
+    POST_COUNTER++;
+    console.log('Processed Request Count--> GET :' + GET_COUNTER + 'POST: ' + POST_COUNTER);
 })
 
 // Delete product with the given id
 server.del('/products/:id', function (req, res, next) {
-    console.log('POST /products params=>' + JSON.stringify(req.params));
+    console.log('Delete /products params=>' + JSON.stringify(req.params));
     // Delete the product with the persistence engine
     productsSave.delete(req.params.id, function (error, product) {
   

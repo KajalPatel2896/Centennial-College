@@ -74,9 +74,10 @@ server.post('/products', function (req, res, next) {
     }
   
     let newproduct = {
+          product_id: req.body.product_id, 
           name: req.body.name, 
           price: req.body.price,
-      quantity: req.body.quantity
+          quantity: req.body.quantity
       }
   
     // Create the product using the persistence engine
